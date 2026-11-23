@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import { connectDB } from './config/db.js';
 import { seedDemoData } from './services/demoDataService.js';
 import { scheduler } from './services/schedulerEngine.js';
@@ -19,8 +22,40 @@ import systemRoutes from './routes/systemRoutes.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ROOT_DIR = path.join(__dirname, '..');
+
 const app = express();
 const PORT = process.env.PORT || 5002;
+
+// Security & Compliance Headers (Phase 13)
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
+// Built-in In-Memory Rate Limiter (Phase 13: 1000 req / 15 min window)
+const ipRequestCounts = new Map();
+app.use((req, res, next) => {
+  const ip = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000;
+  let record = ipRequestCounts.get(ip);
+  if (!record || now - record.startTime > windowMs) {
+    record = { count: 1, startTime: now };
+    ipRequestCounts.set(ip, record);
+  } else {
+    record.count++;
+    if (record.count > 1000) {
+      return res.status(429).json({ success: false, message: 'Too many requests. Please try again later.' });
+    }
+  }
+  next();
+});
 
 // Middleware
 app.use(cors({
@@ -30,6 +65,10 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(morgan('dev'));
+
+// Static Deliverables & Documentation Downloads
+app.use('/downloads', express.static(ROOT_DIR));
+app.use('/docs', express.static(path.join(ROOT_DIR, 'docs')));
 
 // Mount API Routes
 app.use('/api/auth', authRoutes);

@@ -16,7 +16,9 @@ import {
   Calendar,
   Flame,
   RefreshCw,
-  PlusCircle
+  PlusCircle,
+  Filter,
+  Share2
 } from 'lucide-react';
 import {
   AreaChart,
@@ -42,22 +44,25 @@ export const DashboardPage = () => {
   const [trends, setTrends] = useState(null);
   const [recentPosts, setRecentPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [selectedPeriod, setSelectedPeriod] = useState('30d');
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedPlatform, selectedPeriod]);
 
   const loadData = async () => {
     setLoading(true);
     try {
       const [ovData, trData, postData] = await Promise.all([
         api.getOverview(),
-        api.getEngagementTrends({ period: '30d' }),
-        api.getPosts({ status: 'all' })
+        api.getEngagementTrends({ period: selectedPeriod, platform: selectedPlatform }),
+        api.getPosts({ status: 'all', platform: selectedPlatform })
       ]);
       setOverview(ovData);
       setTrends(trData);
-      setRecentPosts(postData.posts?.slice(0, 5) || []);
+      setRecentPosts(postData.posts?.slice(0, 6) || []);
     } catch (err) {
       console.error('Error loading dashboard:', err);
     } finally {
@@ -65,11 +70,37 @@ export const DashboardPage = () => {
     }
   };
 
+  const handleLoadSample = async () => {
+    setActionLoading(true);
+    try {
+      await api.loadDemoData();
+      await loadData();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const summary = overview?.summary || {
+    connectedAccounts: 0,
+    totalPosts: 0,
+    scheduledPosts: 0,
+    publishedPosts: 0,
+    totalCommentsAnalyzed: 0,
+    positiveSentimentPct: 0,
+    averageEngagementRate: 0,
+    totalFollowers: 0,
+    followerGrowthRate: '0%'
+  };
+
   const sentimentData = [
-    { name: 'Positive', value: overview?.summary?.positiveSentimentPct || 72 },
-    { name: 'Neutral', value: 20 },
-    { name: 'Negative', value: 8 }
+    { name: 'Positive', value: summary.positiveSentimentPct || 0 },
+    { name: 'Neutral', value: summary.totalCommentsAnalyzed > 0 ? 20 : 0 },
+    { name: 'Negative', value: summary.totalCommentsAnalyzed > 0 ? 8 : 0 }
   ];
+
+  const isEmpty = overview?.isEmpty || (summary.connectedAccounts === 0 && summary.totalPosts === 0);
 
   if (loading && !overview) {
     return (
@@ -81,18 +112,6 @@ export const DashboardPage = () => {
       </div>
     );
   }
-
-  const summary = overview?.summary || {
-    connectedAccounts: 4,
-    totalPosts: 8,
-    scheduledPosts: 2,
-    publishedPosts: 6,
-    totalCommentsAnalyzed: 20,
-    positiveSentimentPct: 83.3,
-    averageEngagementRate: 4.8,
-    totalFollowers: 58610,
-    followerGrowthRate: '+8.4%'
-  };
 
   return (
     <div className="space-y-6">
@@ -106,7 +125,8 @@ export const DashboardPage = () => {
                 Project Code: P59
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> Meta & X Connected
+                <CheckCircle2 className="w-3 h-3" />
+                {summary.connectedAccounts > 0 ? `${summary.connectedAccounts} Active Accounts` : 'Ready to Connect'}
               </span>
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight">
@@ -136,6 +156,88 @@ export const DashboardPage = () => {
         </div>
       </div>
 
+      {/* Dynamic Filters Bar */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Platform Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 mr-2">
+            <Filter className="w-3.5 h-3.5 text-brand-royal" /> Platform:
+          </span>
+          {['all', 'instagram', 'facebook', 'linkedin', 'twitter'].map((plat) => (
+            <button
+              key={plat}
+              onClick={() => setSelectedPlatform(plat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+                selectedPlatform === plat
+                  ? 'bg-brand-royal text-white shadow-sm'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+              }`}
+            >
+              {plat === 'all' ? 'All Platforms' : plat === 'twitter' ? 'X (Twitter)' : plat}
+            </button>
+          ))}
+        </div>
+
+        {/* Date Range Filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-slate-400">Window:</span>
+          {['7d', '30d', '90d'].map((per) => (
+            <button
+              key={per}
+              onClick={() => setSelectedPeriod(per)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all ${
+                selectedPeriod === per
+                  ? 'bg-slate-800 text-white'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+              }`}
+            >
+              {per}
+            </button>
+          ))}
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 ml-1"
+            title="Refresh Dashboard"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Empty State Banner (If new user with 0 accounts) */}
+      {isEmpty && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-6 text-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-brand-royal text-white flex items-center justify-center flex-shrink-0">
+              <Share2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">Your Workspace is Ready!</h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Connect your social accounts to stream live feeds, or load pre-seeded coffee roastery demo data to explore the AI models immediately.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <Link
+              to="/connect-accounts"
+              className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-semibold shadow-sm transition-all"
+            >
+              Connect Accounts
+            </Link>
+            <button
+              onClick={handleLoadSample}
+              disabled={actionLoading}
+              className="px-4 py-2 rounded-xl bg-brand-royal hover:bg-blue-700 text-white text-xs font-semibold shadow-md shadow-brand-royal/20 transition-all flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {actionLoading ? 'Loading Sample Data...' : 'Load Sample Demo Data'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 8 Primary Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* 1. Connected Accounts */}
@@ -148,7 +250,7 @@ export const DashboardPage = () => {
           </div>
           <div className="text-2xl font-black text-slate-900">{summary.connectedAccounts}</div>
           <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <span className="text-emerald-600 font-bold">100% Active</span> • IG, FB, LI, X
+            <span className="text-emerald-600 font-bold">{summary.connectedAccounts > 0 ? 'Active' : '0 Connected'}</span> • Instagram, FB, LinkedIn, X
           </p>
         </div>
 
@@ -162,7 +264,7 @@ export const DashboardPage = () => {
           </div>
           <div className="text-2xl font-black text-slate-900">{summary.totalPosts}</div>
           <p className="text-[11px] text-slate-500 mt-1">
-            Across 4 connected accounts
+            In current selected platform filter
           </p>
         </div>
 
@@ -177,7 +279,7 @@ export const DashboardPage = () => {
           <div className="text-2xl font-black text-slate-900">{summary.scheduledPosts}</div>
           <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            Persistent runner active
+            Scheduler daemon polling
           </p>
         </div>
 
@@ -219,7 +321,7 @@ export const DashboardPage = () => {
           </div>
           <div className="text-2xl font-black text-emerald-600">{summary.positiveSentimentPct}%</div>
           <p className="text-[11px] text-slate-500 mt-1">
-            Target benchmark validated
+            Benchmark validated
           </p>
         </div>
 
@@ -233,7 +335,7 @@ export const DashboardPage = () => {
           </div>
           <div className="text-2xl font-black text-slate-900">{summary.averageEngagementRate}%</div>
           <p className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-0.5">
-            <ArrowUpRight className="w-3.5 h-3.5" /> +1.2% vs industry baseline
+            <ArrowUpRight className="w-3.5 h-3.5" /> Interactions / Reach
           </p>
         </div>
 
@@ -261,10 +363,10 @@ export const DashboardPage = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-base font-bold text-slate-800">Engagement & Interaction Trends</h3>
-              <p className="text-xs text-slate-500">Likes, comments, and reach performance over the last 30 days</p>
+              <p className="text-xs text-slate-500">Likes, comments, and reach performance over the selected window ({selectedPeriod})</p>
             </div>
             <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
-              Historical 30-Day Window
+              Dynamic Filter: {selectedPlatform.toUpperCase()}
             </span>
           </div>
 
@@ -339,11 +441,11 @@ export const DashboardPage = () => {
             </div>
             <div className="p-2 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-[10px] font-bold text-slate-600 block">Neutral</span>
-              <span className="text-sm font-bold text-slate-700">20%</span>
+              <span className="text-sm font-bold text-slate-700">{summary.totalCommentsAnalyzed > 0 ? '20%' : '0%'}</span>
             </div>
             <div className="p-2 rounded-xl bg-rose-50 border border-rose-100">
               <span className="text-[10px] font-bold text-rose-800 block">Negative</span>
-              <span className="text-sm font-bold text-rose-700">8%</span>
+              <span className="text-sm font-bold text-rose-700">{summary.totalCommentsAnalyzed > 0 ? '8%' : '0%'}</span>
             </div>
           </div>
         </div>
@@ -358,7 +460,7 @@ export const DashboardPage = () => {
               <h3 className="text-base font-bold text-slate-800">Platform Performance Comparison</h3>
               <p className="text-xs text-slate-500">Cross-network reach and engagement breakdown</p>
             </div>
-            <span className="text-xs font-semibold text-brand-royal">4 Networks</span>
+            <span className="text-xs font-semibold text-brand-royal">Filtered View</span>
           </div>
 
           <div className="h-64 w-full">
@@ -424,61 +526,69 @@ export const DashboardPage = () => {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                <th className="py-3 px-4">Post & Caption</th>
-                <th className="py-3 px-4">Platform</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Data Source</th>
-                <th className="py-3 px-4">Interactions</th>
-                <th className="py-3 px-4">Published / Scheduled</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {recentPosts.map((post) => (
-                <tr key={post.id || post._id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3 px-4 max-w-xs">
-                    <p className="font-semibold text-slate-800 truncate">{post.title || 'Untitled Post'}</p>
-                    <p className="text-slate-500 truncate text-[11px]">{post.content}</p>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="capitalize font-bold px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 border border-slate-200">
-                      {post.platform}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`font-bold px-2 py-0.5 rounded-full text-[10px] uppercase ${
-                        post.status === 'published'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : post.status === 'scheduled'
-                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
-                      {post.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 flex items-center gap-1 w-fit">
-                      <ShieldCheck className="w-3 h-3 text-blue-600" />
-                      {post.isSimulated ? 'Demo Simulation' : 'Actual Platform'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-semibold text-slate-700">
-                    {(post.metricsSnapshot?.likes || 0) + (post.metricsSnapshot?.comments || 0)} interactions
-                  </td>
-                  <td className="py-3 px-4 text-slate-500 text-[11px]">
-                    {new Date(post.publishedAt || post.scheduledAt || post.createdAt).toLocaleDateString()}
-                  </td>
+        {recentPosts.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 text-xs">
+            No posts found matching the selected platform filter.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                  <th className="py-3 px-4">Post & Caption</th>
+                  <th className="py-3 px-4">Platform</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Data Source</th>
+                  <th className="py-3 px-4">Interactions</th>
+                  <th className="py-3 px-4">Published / Scheduled</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {recentPosts.map((post) => (
+                  <tr key={post.id || post._id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3 px-4 max-w-xs">
+                      <p className="font-semibold text-slate-800 truncate">{post.title || 'Untitled Post'}</p>
+                      <p className="text-slate-500 truncate text-[11px]">{post.content}</p>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="capitalize font-bold px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 border border-slate-200">
+                        {post.platform}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`font-bold px-2 py-0.5 rounded-full text-[10px] uppercase ${
+                          post.status === 'published'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : post.status === 'scheduled'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {post.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 flex items-center gap-1 w-fit">
+                        <ShieldCheck className="w-3 h-3 text-blue-600" />
+                        {post.isSimulated ? 'Demo Simulation' : 'Actual Platform'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-semibold text-slate-700">
+                      {(post.metricsSnapshot?.likes || 0) + (post.metricsSnapshot?.comments || 0)} interactions
+                    </td>
+                    <td className="py-3 px-4 text-slate-500 text-[11px]">
+                      {new Date(post.publishedAt || post.scheduledAt || post.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+export default DashboardPage;

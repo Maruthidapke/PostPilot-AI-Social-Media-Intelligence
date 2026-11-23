@@ -21,8 +21,13 @@ client.interceptors.request.use((config) => {
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
-      // Allow fallback / demo access seamlessly
+    const isAuthRoute = window.location.pathname.includes('/login') ||
+                        window.location.pathname.includes('/register') ||
+                        window.location.pathname.includes('/forgot-password') ||
+                        window.location.pathname.includes('/reset-password');
+    if (error.response?.status === 401 && !isAuthRoute) {
+      localStorage.removeItem('postpilot_token');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
@@ -32,7 +37,10 @@ export const api = {
   // Auth
   register: (data) => client.post('/auth/register', data).then(r => r.data),
   login: (data) => client.post('/auth/login', data).then(r => r.data),
+  forgotPassword: (email) => client.post('/auth/forgot-password', { email }).then(r => r.data),
+  resetPassword: (data) => client.post('/auth/reset-password', data).then(r => r.data),
   getMe: () => client.get('/auth/me').then(r => r.data),
+  updateProfile: (data) => client.put('/auth/profile', data).then(r => r.data),
 
   // Social Connections
   getProviders: () => client.get('/social/providers').then(r => r.data),
@@ -78,13 +86,15 @@ export const api = {
   getAITools: () => client.get('/sepm/tools').then(r => r.data),
   getSprints: () => client.get('/sepm/sprints').then(r => r.data),
   getKanbanTasks: () => client.get('/sepm/kanban').then(r => r.data),
+  createKanbanTask: (data) => client.post('/sepm/kanban', data).then(r => r.data),
   updateKanbanTask: (id, status) => client.put(`/sepm/kanban/${id}`, { status }).then(r => r.data),
   getPlanningPoker: () => client.get('/sepm/planning-poker').then(r => r.data),
   getLeanWaste: () => client.get('/sepm/lean-waste').then(r => r.data),
   getSyllabus: () => client.get('/sepm/syllabus').then(r => r.data),
   updateSyllabusItem: (id, data) => client.put(`/sepm/syllabus/${id}`, data).then(r => r.data),
 
-  // System
+  // System & Audit
   getHealth: () => client.get('/health').then(r => r.data),
-  getMetrics: () => client.get('/metrics').then(r => r.data)
+  getMetrics: () => client.get('/metrics').then(r => r.data),
+  getAuditLogs: () => client.get('/system/audit-logs').then(r => r.data)
 };

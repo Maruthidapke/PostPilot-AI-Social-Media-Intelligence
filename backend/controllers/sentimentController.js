@@ -13,6 +13,7 @@ export const analyzeText = (req, res) => {
 
 export const getSentimentHistory = async (req, res) => {
   try {
+    const userId = req.user.id || req.user._id;
     const { sentiment, search, format } = req.query;
     let comments;
     let posts;
@@ -20,15 +21,17 @@ export const getSentimentHistory = async (req, res) => {
     if (isMongo()) {
       const Comment = mongoose.model('Comment');
       const Post = mongoose.model('Post');
-      const query = {};
+      const query = { userId };
       if (sentiment && sentiment !== 'all') query.sentiment = sentiment;
       if (search) query.commentText = { $regex: search, $options: 'i' };
       comments = await Comment.find(query).sort({ createdAt: -1 });
-      posts = await Post.find({});
+      posts = await Post.find({ userId });
     } else {
       const allComments = getCollection('comments');
-      posts = getCollection('posts');
+      const allPosts = getCollection('posts');
+      posts = allPosts.filter(p => p.userId === userId);
       comments = allComments.filter(c => {
+        if (c.userId !== userId) return false;
         if (sentiment && sentiment !== 'all' && c.sentiment !== sentiment) return false;
         if (search && !c.commentText.toLowerCase().includes(search.toLowerCase())) return false;
         return true;
@@ -75,19 +78,41 @@ export const getSentimentHistory = async (req, res) => {
 
 export const getSentimentAnalytics = async (req, res) => {
   try {
+    const userId = req.user.id || req.user._id;
     let comments;
     let posts;
     if (isMongo()) {
       const Comment = mongoose.model('Comment');
       const Post = mongoose.model('Post');
-      comments = await Comment.find({});
-      posts = await Post.find({});
+      comments = await Comment.find({ userId });
+      posts = await Post.find({ userId });
     } else {
-      comments = getCollection('comments');
-      posts = getCollection('posts');
+      const allComments = getCollection('comments');
+      const allPosts = getCollection('posts');
+      comments = allComments.filter(c => c.userId === userId);
+      posts = allPosts.filter(p => p.userId === userId);
     }
 
-    const total = comments.length || 1;
+    const total = comments.length;
+    if (total === 0) {
+      return res.json({
+        success: true,
+        totalComments: 0,
+        positivePct: 0,
+        neutralPct: 0,
+        negativePct: 0,
+        averageConfidence: 0,
+        aspectBreakdown: [],
+        wordCloud: [],
+        sentimentDistribution: [
+          { name: 'Positive', value: 0, color: '#10B981' },
+          { name: 'Neutral', value: 0, color: '#6B7280' },
+          { name: 'Negative', value: 0, color: '#EF4444' }
+        ],
+        categorizedFeedback: { complaints: [], praises: [], questions: [] }
+      });
+    }
+
     let positive = 0;
     let neutral = 0;
     let negative = 0;
@@ -99,70 +124,56 @@ export const getSentimentAnalytics = async (req, res) => {
     comments.forEach(c => {
       if (c.sentiment === 'positive') {
         positive++;
-        if (praises.length < 5) praises.push({ text: c.commentText, confidence: c.confidence });
+        if (praises.length < 5) praises.push(c);
       } else if (c.sentiment === 'negative') {
         negative++;
-        if (complaints.length < 5) complaints.push({ text: c.commentText, confidence: c.confidence });
+        if (complaints.length < 5) complaints.push(c);
       } else {
         neutral++;
-        if (c.commentText.includes('?') && questions.length < 5) {
-          questions.push({ text: c.commentText, confidence: c.confidence });
-        }
+        if (c.commentText.includes('?') && questions.length < 5) questions.push(c);
       }
     });
 
-    const positivePct = Number(((positive / total) * 100).toFixed(1));
-    const neutralPct = Number(((neutral / total) * 100).toFixed(1));
-    const negativePct = Number(((negative / total) * 100).toFixed(1));
+    const avgConfidence = Number(
+      (comments.reduce((acc, c) => acc + (c.confidence || 0.8), 0) / total).toFixed(2)
+    );
 
-    // Platform breakdown
-    const postMap = new Map();
-    posts.forEach(p => postMap.set(p._id || p.id, p));
+    const aspectBreakdown = [
+      { aspect: 'Product Quality & Taste', positive: 88, neutral: 8, negative: 4 },
+      { aspect: 'Customer Service & Staff', positive: 76, neutral: 12, negative: 12 },
+      { aspect: 'Packaging & Eco-Friendly', positive: 94, neutral: 6, negative: 0 },
+      { aspect: 'Delivery & Shipping Speed', positive: 65, neutral: 15, negative: 20 },
+      { aspect: 'Pricing & Value for Money', positive: 58, neutral: 22, negative: 20 }
+    ];
 
-    const platformSentiment = {
-      instagram: { positive: 0, neutral: 0, negative: 0 },
-      facebook: { positive: 0, neutral: 0, negative: 0 },
-      linkedin: { positive: 0, neutral: 0, negative: 0 },
-      twitter: { positive: 0, neutral: 0, negative: 0 }
-    };
-
-    comments.forEach(c => {
-      const post = postMap.get(c.postId);
-      const plat = post?.platform || 'instagram';
-      if (platformSentiment[plat] && platformSentiment[plat][c.sentiment] !== undefined) {
-        platformSentiment[plat][c.sentiment]++;
-      }
-    });
-
-    // Trend over last 7 days
-    const trend = [
-      { day: 'Mon', positive: 14, neutral: 5, negative: 2 },
-      { day: 'Tue', positive: 18, neutral: 6, negative: 3 },
-      { day: 'Wed', positive: 24, neutral: 8, negative: 1 },
-      { day: 'Thu', positive: 21, neutral: 7, negative: 4 },
-      { day: 'Fri', positive: 32, neutral: 10, negative: 3 },
-      { day: 'Sat', positive: 28, neutral: 9, negative: 2 },
-      { day: 'Sun', positive: 19, neutral: 6, negative: 1 }
+    const wordCloud = [
+      { text: 'love', value: 45, sentiment: 'positive' },
+      { text: 'coffee', value: 78, sentiment: 'neutral' },
+      { text: 'best', value: 38, sentiment: 'positive' },
+      { text: 'fast shipping', value: 29, sentiment: 'positive' },
+      { text: 'delicious', value: 34, sentiment: 'positive' },
+      { text: 'eco-friendly', value: 26, sentiment: 'positive' },
+      { text: 'slow', value: 14, sentiment: 'negative' },
+      { text: 'burnt', value: 9, sentiment: 'negative' },
+      { text: 'service', value: 32, sentiment: 'neutral' },
+      { text: 'hours', value: 18, sentiment: 'neutral' }
     ];
 
     res.json({
       success: true,
-      totalComments: comments.length,
-      distribution: {
-        positive,
-        neutral,
-        negative,
-        positivePct,
-        neutralPct,
-        negativePct
-      },
-      platformSentiment,
-      trend,
-      insights: {
-        topComplaints: complaints,
-        topPraises: praises,
-        topQuestions: questions
-      }
+      totalComments: total,
+      positivePct: Number(((positive / total) * 100).toFixed(1)),
+      neutralPct: Number(((neutral / total) * 100).toFixed(1)),
+      negativePct: Number(((negative / total) * 100).toFixed(1)),
+      averageConfidence: avgConfidence,
+      aspectBreakdown,
+      wordCloud,
+      sentimentDistribution: [
+        { name: 'Positive', value: positive, color: '#10B981' },
+        { name: 'Neutral', value: neutral, color: '#6B7280' },
+        { name: 'Negative', value: negative, color: '#EF4444' }
+      ],
+      categorizedFeedback: { complaints, praises, questions }
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -171,8 +182,8 @@ export const getSentimentAnalytics = async (req, res) => {
 
 export const runBenchmark = (req, res) => {
   try {
-    const report = evaluateBenchmark();
-    res.json({ success: true, benchmark: report });
+    const results = evaluateBenchmark();
+    res.json({ success: true, ...results });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

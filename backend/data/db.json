@@ -9,6 +9,16 @@
       "role": "manager",
       "timezone": "Asia/Kolkata",
       "createdAt": "2026-11-01T09:00:00.000Z"
+    },
+    {
+      "_id": "usr_1795458031842_gsubc",
+      "id": "usr_1795458031842_gsubc",
+      "name": "Priya Nair",
+      "email": "priya_1795458031767@company.com",
+      "passwordHash": "$2a$10$xLtPbyfut0dwQU/wBd1fsuWsNPEvCXI7AEOHQhYVvgewf6JMtkZ0S",
+      "role": "manager",
+      "timezone": "Asia/Kolkata",
+      "createdAt": "2026-11-23T18:20:31.842Z"
     }
   ],
   "socialAccounts": [
@@ -103,6 +113,30 @@
       "postsCount": 42,
       "lastSyncedAt": "2026-11-23T15:27:12.989Z",
       "createdAt": "2026-11-04T12:00:00.000Z"
+    },
+    {
+      "_id": "acc_instagram_1795458031857",
+      "id": "acc_instagram_1795458031857",
+      "userId": "usr_1795458031842_gsubc",
+      "platform": "instagram",
+      "platformAccountId": "17841405309211029",
+      "username": "urbanblend_coffee",
+      "displayName": "Urban Blend Coffee Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop",
+      "accountType": "business",
+      "connectionStatus": "connected",
+      "permissions": [
+        "read_profile",
+        "read_insights",
+        "manage_comments",
+        "publish_content"
+      ],
+      "isDemo": true,
+      "followersCount": 18450,
+      "followingCount": 342,
+      "postsCount": 15,
+      "lastSyncedAt": "2026-11-23T18:20:31.857Z",
+      "createdAt": "2026-11-23T18:20:31.857Z"
     }
   ],
   "oauthCredentials": [
@@ -149,6 +183,12 @@
         "scope": "tweet.read,tweet.write,users.read",
         "tokenType": "Bearer"
       }
+    },
+    {
+      "_id": "cred_acc_instagram_1795458031857",
+      "socialAccountId": "acc_instagram_1795458031857",
+      "encryptedAccessToken": "c69528ba656399ddfe920767a207dd40:5bcee7619e17b34769de8fe3aa93afa2:0ed1fb19ea98488b305d48f2b266d0aebcd1185b98b575082252a0",
+      "expiresAt": "2027-01-22T18:20:31.857Z"
     }
   ],
   "posts": [

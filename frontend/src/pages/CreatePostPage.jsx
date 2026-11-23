@@ -40,10 +40,30 @@ export const CreatePostPage = () => {
     searchParams.get('date') || new Date(Date.now() + 86400000).toISOString().slice(0, 16)
   );
 
+  const [accounts, setAccounts] = useState([]);
+  const [selectedAccountId, setSelectedAccountId] = useState('');
   const [prediction, setPrediction] = useState(null);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
+
+  // Load connected accounts and prefilled content
+  useEffect(() => {
+    const prefill = sessionStorage.getItem('postpilot_prefill_caption');
+    if (prefill) {
+      setContent(prefill);
+      sessionStorage.removeItem('postpilot_prefill_caption');
+    }
+
+    api.getAccounts().then(res => {
+      if (res.success && res.accounts?.length > 0) {
+        setAccounts(res.accounts);
+        const match = res.accounts.find(a => a.platform === platform);
+        if (match) setSelectedAccountId(match.id || match._id);
+        else setSelectedAccountId(res.accounts[0].id || res.accounts[0]._id);
+      }
+    }).catch(console.error);
+  }, []);
 
   // Auto-run ML prediction whenever content, platform, or time changes
   useEffect(() => {
@@ -105,6 +125,7 @@ export const CreatePostPage = () => {
         title: title || 'Social Post',
         content,
         platform,
+        socialAccountId: selectedAccountId || (accounts.length > 0 ? (accounts[0].id || accounts[0]._id) : 'acc_ig_001'),
         contentType,
         media: [{ url: mediaUrl, type: contentType }],
         hashtags: tagArray,
@@ -234,6 +255,24 @@ export const CreatePostPage = () => {
               ))}
             </div>
           </div>
+
+          {/* Connected Account Selector */}
+          {accounts.length > 0 && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Publishing Profile</label>
+              <select
+                value={selectedAccountId}
+                onChange={(e) => setSelectedAccountId(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+              >
+                {accounts.map(acc => (
+                  <option key={acc.id || acc._id} value={acc.id || acc._id}>
+                    @{acc.username} ({acc.displayName}) • {acc.platform} ({acc.accountType})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Title */}
           <div className="space-y-1.5">

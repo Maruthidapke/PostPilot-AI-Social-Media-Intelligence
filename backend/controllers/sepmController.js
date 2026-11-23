@@ -170,6 +170,23 @@ export const updateKanbanTask = (req, res) => {
   res.json({ success: true, task });
 };
 
+export const createKanbanTask = (req, res) => {
+  const { title, storyId = 'US-01', status = 'To Do', assignee = 'Maruthi Dapke', hours = 4 } = req.body;
+  if (!title) return res.status(400).json({ success: false, message: 'Task title is required' });
+  const tasks = getCollection('sepmTasks');
+  const newTask = {
+    id: `TSK-${Date.now().toString().slice(-4)}`,
+    storyId,
+    title,
+    status,
+    assignee,
+    hours: Number(hours) || 4
+  };
+  tasks.push(newTask);
+  saveStore();
+  res.status(201).json({ success: true, task: newTask });
+};
+
 export const getPlanningPoker = (req, res) => {
   res.json({
     success: true,

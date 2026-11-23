@@ -1,7 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { MainLayout } from './layouts/MainLayout';
+
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 
 import { DashboardPage } from './pages/DashboardPage';
 import { ConnectAccountsPage } from './pages/ConnectAccountsPage';
@@ -18,12 +22,44 @@ import { SEPMWorkspacePage } from './pages/SEPMWorkspacePage';
 import { ReportsDocsPage } from './pages/ReportsDocsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
+function ProtectedRoute({ children }) {
+  const { user, token, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100">
+        <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-4" />
+        <p className="text-sm text-slate-400 font-medium">Verifying PostPilot AI session...</p>
+      </div>
+    );
+  }
+
+  if (!token || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 export function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<MainLayout />}>
+          {/* Public Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+          {/* Protected Application Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="connect-accounts" element={<ConnectAccountsPage />} />

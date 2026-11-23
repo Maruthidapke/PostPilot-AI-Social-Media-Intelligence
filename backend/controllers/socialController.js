@@ -1,7 +1,7 @@
 import { getCollection, saveStore, isMongo } from '../config/db.js';
 import { getConnector } from '../social-connectors/index.js';
 import { encryptToken, decryptToken } from '../utils/crypto.js';
-import { seedDemoData } from '../services/demoDataService.js';
+import { seedDemoData, seedDataForUser, clearDataForUser } from '../services/demoDataService.js';
 import mongoose from 'mongoose';
 
 export const getProviders = (req, res) => {
@@ -61,7 +61,7 @@ export const getAccounts = async (req, res) => {
       accounts = await SocialAccount.find({ userId });
     } else {
       const allAccounts = getCollection('socialAccounts');
-      accounts = allAccounts.filter(a => a.userId === userId || a.userId === 'usr_demo_p59_001');
+      accounts = allAccounts.filter(a => a.userId === userId);
     }
 
     res.json({ success: true, accounts });
@@ -197,8 +197,9 @@ export const syncAccount = async (req, res) => {
 
 export const handleLoadDemo = async (req, res) => {
   try {
-    await seedDemoData(true);
-    res.json({ success: true, message: 'Demo data loaded successfully with 4 verified accounts, 8 posts, and 20 analyzed comments.' });
+    const userId = req.user.id || req.user._id;
+    const result = await seedDataForUser(userId);
+    res.json({ success: true, message: `Sample demo data loaded for your account (${result.accountsCount} accounts, ${result.postsCount} posts, ${result.commentsCount} analyzed comments).`, result });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -206,8 +207,9 @@ export const handleLoadDemo = async (req, res) => {
 
 export const handleResetDemo = async (req, res) => {
   try {
-    await seedDemoData(true);
-    res.json({ success: true, message: 'Demo data reset to clean initial state.' });
+    const userId = req.user.id || req.user._id;
+    clearDataForUser(userId);
+    res.json({ success: true, message: 'All demo accounts and data have been cleared from your profile.' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

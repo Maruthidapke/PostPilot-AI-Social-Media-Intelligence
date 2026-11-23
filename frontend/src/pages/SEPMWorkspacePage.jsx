@@ -15,7 +15,9 @@ import {
   Sparkles,
   RefreshCw,
   Edit,
-  ArrowRight
+  ArrowRight,
+  PlusCircle,
+  X
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -30,6 +32,16 @@ export const SEPMWorkspacePage = () => {
   const [leanData, setLeanData] = useState(null);
   const [syllabusData, setSyllabusData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Kanban New Task Modal
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskStoryId, setNewTaskStoryId] = useState('US-01');
+  const [newTaskStatus, setNewTaskStatus] = useState('To Do');
+  const [newTaskHours, setNewTaskHours] = useState('4');
+
+  // Planning Poker Selected Vote
+  const [userPokerVote, setUserPokerVote] = useState(8);
 
   useEffect(() => {
     loadAllSEPM();
@@ -70,6 +82,39 @@ export const SEPMWorkspacePage = () => {
       setKanbanData(updated);
     } catch (e) {
       alert('Error updating task: ' + e.message);
+    }
+  };
+
+  const handleCreateKanbanTask = async (e) => {
+    e.preventDefault();
+    if (!newTaskTitle.trim()) return;
+    try {
+      await api.createKanbanTask({
+        title: newTaskTitle,
+        storyId: newTaskStoryId,
+        status: newTaskStatus,
+        hours: Number(newTaskHours) || 4,
+        assignee: 'Maruthi Dapke'
+      });
+      setShowTaskModal(false);
+      setNewTaskTitle('');
+      const updated = await api.getKanbanTasks();
+      setKanbanData(updated);
+    } catch (err) {
+      alert('Failed to create task: ' + err.message);
+    }
+  };
+
+  const handleToggleSyllabus = async (item) => {
+    const nextStatus = item.status === 'Completed' ? 'In Review' : 'Completed';
+    try {
+      await api.updateSyllabusItem(item.id, { status: nextStatus });
+      setSyllabusData(prev => ({
+        ...prev,
+        syllabus: prev.syllabus.map(s => s.id === item.id ? { ...s, status: nextStatus } : s)
+      }));
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -120,12 +165,12 @@ export const SEPMWorkspacePage = () => {
               className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 activeTab === t.id
                   ? 'bg-brand-royal text-white shadow-md shadow-brand-royal/30'
-                  : 'text-slate-300 hover:text-white hover:bg-navy-800/80'
+                  : 'bg-navy-800/80 text-slate-300 hover:bg-navy-700 hover:text-white'
               }`}
             >
-              <span>{t.label}</span>
+              {t.label}
               {t.badge && (
-                <span className="text-[10px] bg-indigo-500/30 px-1.5 py-0.2 rounded border border-indigo-400/40 text-blue-200">
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-amber-400 text-navy-950 font-black">
                   {t.badge}
                 </span>
               )}
@@ -136,135 +181,73 @@ export const SEPMWorkspacePage = () => {
 
       {/* Tab 1: SDLC Process Models */}
       {activeTab === 'sdlc' && (
-        <div className="space-y-6">
-          {/* Selected Model Justification Card */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Selected SDLC Lifecycle Model
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
-                Adopted for P59
-              </span>
-            </div>
-            <h2 className="text-lg font-black text-slate-900">{sdlcData?.selectedModel}</h2>
-            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-              <strong>Academic Rationale:</strong> {sdlcData?.justification}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+          <div className="border-b border-slate-100 pb-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+              Selected SDLC Paradigm
+            </span>
+            <h2 className="text-lg font-black text-slate-900 mt-2">
+              {sdlcData?.selectedModel || 'Iterative-Incremental Agile with AI Rapid Prototyping'}
+            </h2>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed max-w-3xl">
+              {sdlcData?.justification}
             </p>
           </div>
 
-          {/* Model Comparison Table */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-slate-200/80">
-              <h3 className="text-base font-bold text-slate-800">Comparative Process Model Matrix</h3>
-              <p className="text-xs text-slate-500">Evaluation of standard lifecycle paradigms against social API development</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                    <th className="py-3 px-4">Process Model</th>
-                    <th className="py-3 px-4">Stages</th>
-                    <th className="py-3 px-4">Advantages</th>
-                    <th className="py-3 px-4">Disadvantages</th>
-                    <th className="py-3 px-4">Suitability for PostPilot</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {(sdlcData?.modelsComparison || []).map((m, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 font-bold text-slate-900">{m.name}</td>
-                      <td className="py-3 px-4 text-slate-600 max-w-xs">{m.stages}</td>
-                      <td className="py-3 px-4 text-emerald-700">{m.advantages}</td>
-                      <td className="py-3 px-4 text-rose-700">{m.disadvantages}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{m.suitability}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(sdlcData?.modelsComparison || []).map((m, idx) => (
+              <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <h3 className="font-bold text-slate-900">{m.name}</h3>
+                  <span className="text-[10px] font-semibold text-slate-500">{m.suitability}</span>
+                </div>
+                <p className="text-slate-500 text-[11px]"><strong>Stages:</strong> {m.stages}</p>
+                <p className="text-emerald-700 text-[11px]"><strong>Pros:</strong> {m.advantages}</p>
+                <p className="text-rose-700 text-[11px]"><strong>Cons:</strong> {m.disadvantages}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {/* Tab 2: Requirements Engineering */}
       {activeTab === 'requirements' && (
-        <div className="space-y-6">
-          {/* SRS v1 vs v2 Audit Card */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <h2 className="text-base font-bold text-slate-900">
-                SRS Evolution: AI Draft v1 vs. Human-Audited v2
-              </h2>
-              <span className="text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
-                Audited & Corrected
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <span className="font-bold text-slate-700 block text-xs uppercase">Initial AI Draft (SRS v1)</span>
-                <p className="text-slate-600 leading-relaxed">{reqData?.srsComparison?.v1_summary}</p>
-              </div>
-              <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200 space-y-2">
-                <span className="font-bold text-emerald-800 block text-xs uppercase">Human-Corrected (SRS v2)</span>
-                <p className="text-emerald-900 leading-relaxed">{reqData?.srsComparison?.v2_summary}</p>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 pt-2">
-              <span className="text-xs font-bold text-slate-700">Audit Adjustments Implemented:</span>
-              <ul className="space-y-1 text-xs text-slate-600">
-                {(reqData?.srsComparison?.corrections || []).map((cor, idx) => (
-                  <li key={idx} className="flex items-start gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span>{cor}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden space-y-4">
+          <div className="p-6 border-b border-slate-200">
+            <h2 className="text-base font-bold text-slate-900">Functional & Non-Functional Requirements</h2>
+            <p className="text-xs text-slate-500">IEEE 830 compliant requirements matrix with human vs AI SRS evolution</p>
           </div>
-
-          {/* 20 Functional Requirements Table */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-slate-200/80">
-              <h3 className="text-base font-bold text-slate-800">20 Project Functional Requirements</h3>
-              <p className="text-xs text-slate-500">Tracked with requirement priority and implementation status</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                    <th className="py-3 px-4">Req ID</th>
-                    <th className="py-3 px-4">Title</th>
-                    <th className="py-3 px-4">Description</th>
-                    <th className="py-3 px-4">Priority</th>
-                    <th className="py-3 px-4">Status</th>
+          <div className="overflow-x-auto px-6 pb-6">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                  <th className="py-2.5 px-3">Req ID</th>
+                  <th className="py-2.5 px-3">Requirement Title</th>
+                  <th className="py-2.5 px-3">Priority</th>
+                  <th className="py-2.5 px-3">Status</th>
+                  <th className="py-2.5 px-3">Description</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {(reqData?.functionalRequirements || []).map((fr) => (
+                  <tr key={fr.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-2.5 px-3 font-mono font-bold text-brand-royal">{fr.id}</td>
+                    <td className="py-2.5 px-3 font-bold text-slate-800">{fr.title}</td>
+                    <td className="py-2.5 px-3">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        {fr.priority}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {fr.status}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-600">{fr.description}</td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {(reqData?.functionalRequirements || []).map((req) => (
-                    <tr key={req.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-brand-royal">{req.id}</td>
-                      <td className="py-3 px-4 font-bold text-slate-800">{req.title}</td>
-                      <td className="py-3 px-4 text-slate-600 max-w-md">{req.description}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          req.priority === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {req.priority}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {req.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -273,10 +256,9 @@ export const SEPMWorkspacePage = () => {
       {activeTab === 'ai-tools' && (
         <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
           <div>
-            <h2 className="text-base font-bold text-slate-900">AI Development Tool Benchmark Scorecard</h2>
+            <h2 className="text-base font-bold text-slate-900">Comparative AI Development Tool Benchmark</h2>
             <p className="text-xs text-slate-500">Evaluation across Correctness, Readability, Security, Maintainability, and Speed</p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(toolsData?.tools || []).map((t, idx) => (
               <div key={idx} className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
@@ -286,30 +268,13 @@ export const SEPMWorkspacePage = () => {
                     {((t.correctness + t.readability + t.security + t.maintainability + t.speed) / 5).toFixed(1)} / 10
                   </span>
                 </div>
-
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Correctness:</span>
-                    <span className="font-bold text-slate-800">{t.correctness} / 10</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Readability:</span>
-                    <span className="font-bold text-slate-800">{t.readability} / 10</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Security:</span>
-                    <span className="font-bold text-slate-800">{t.security} / 10</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Maintainability:</span>
-                    <span className="font-bold text-slate-800">{t.maintainability} / 10</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Speed:</span>
-                    <span className="font-bold text-slate-800">{t.speed} / 10</span>
-                  </div>
+                  <div className="flex justify-between"><span className="text-slate-500">Correctness:</span><span className="font-bold text-slate-800">{t.correctness} / 10</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Readability:</span><span className="font-bold text-slate-800">{t.readability} / 10</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Security:</span><span className="font-bold text-slate-800">{t.security} / 10</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Maintainability:</span><span className="font-bold text-slate-800">{t.maintainability} / 10</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Speed:</span><span className="font-bold text-slate-800">{t.speed} / 10</span></div>
                 </div>
-
                 <div className="text-[11px] space-y-1 pt-2 border-t border-slate-200 text-slate-600">
                   <p><strong>Strengths:</strong> {t.strengths}</p>
                   <p className="text-slate-500"><strong>Limitations:</strong> {t.weaknesses}</p>
@@ -352,48 +317,6 @@ export const SEPMWorkspacePage = () => {
               </div>
             ))}
           </div>
-
-          {/* User Stories Table */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-slate-200/80">
-              <h3 className="text-base font-bold text-slate-800">Sprint Backlog User Stories</h3>
-              <p className="text-xs text-slate-500">Assigned story points, priority, and completion status</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                    <th className="py-3 px-4">Story ID</th>
-                    <th className="py-3 px-4">Sprint</th>
-                    <th className="py-3 px-4">User Story Title</th>
-                    <th className="py-3 px-4">Story Points</th>
-                    <th className="py-3 px-4">Priority</th>
-                    <th className="py-3 px-4">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {(sprintData?.stories || []).map((st) => (
-                    <tr key={st.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-brand-royal">{st.id}</td>
-                      <td className="py-3 px-4 uppercase text-slate-500 text-[10px]">{st.sprint}</td>
-                      <td className="py-3 px-4 font-bold text-slate-800">{st.title}</td>
-                      <td className="py-3 px-4 font-black text-slate-900">{st.points} pts</td>
-                      <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                          {st.priority}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {st.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       )}
 
@@ -403,8 +326,15 @@ export const SEPMWorkspacePage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-slate-900">Interactive Kanban Workflow Board</h2>
-              <p className="text-xs text-slate-500">6 workflow stages with enforced WIP limits. Click buttons to transition tasks.</p>
+              <p className="text-xs text-slate-500">6 workflow stages with enforced WIP limits. Move tasks across columns or create new tasks.</p>
             </div>
+            <button
+              onClick={() => setShowTaskModal(true)}
+              className="px-3.5 py-2 rounded-xl bg-brand-royal hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              Add Task
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -463,6 +393,95 @@ export const SEPMWorkspacePage = () => {
               );
             })}
           </div>
+
+          {/* Modal to Add New Kanban Task */}
+          {showTaskModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl max-w-md w-full border border-slate-200 shadow-2xl p-6 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <PlusCircle className="w-4 h-4 text-brand-royal" />
+                    Create Kanban Task
+                  </h3>
+                  <button onClick={() => setShowTaskModal(false)} className="text-slate-400 hover:text-slate-600 font-bold">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleCreateKanbanTask} className="space-y-3 text-xs">
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">Task Title</label>
+                    <input
+                      type="text"
+                      value={newTaskTitle}
+                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                      placeholder="e.g. Implement Webhook for Real-time Instagram Comments"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-semibold text-slate-700 mb-1">Parent User Story</label>
+                      <select
+                        value={newTaskStoryId}
+                        onChange={(e) => setNewTaskStoryId(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs"
+                      >
+                        <option value="US-01">US-01 (OAuth Flow)</option>
+                        <option value="US-02">US-02 (Instagram Connector)</option>
+                        <option value="US-04">US-04 (Calendar Scheduler)</option>
+                        <option value="US-05">US-05 (Sentiment Engine)</option>
+                        <option value="US-07">US-07 (Engagement Prediction)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-slate-700 mb-1">Starting Column</label>
+                      <select
+                        value={newTaskStatus}
+                        onChange={(e) => setNewTaskStatus(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs"
+                      >
+                        <option value="Backlog">Backlog</option>
+                        <option value="To Do">To Do</option>
+                        <option value="In Progress">In Progress</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">Estimated Hours</label>
+                    <input
+                      type="number"
+                      value={newTaskHours}
+                      onChange={(e) => setNewTaskHours(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs"
+                      min="1"
+                      max="40"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowTaskModal(false)}
+                      className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-xl bg-brand-royal hover:bg-blue-700 text-white font-semibold shadow-sm"
+                    >
+                      Create Task
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -475,7 +494,7 @@ export const SEPMWorkspacePage = () => {
               <p className="text-xs text-slate-500">Estimating User Story US-07 with Fibonacci consensus voting</p>
             </div>
             <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
-              Active Voting Session
+              Interactive Card Deck
             </span>
           </div>
 
@@ -486,19 +505,23 @@ export const SEPMWorkspacePage = () => {
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Fibonacci Cards</h3>
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Select Your Fibonacci Card (Current Vote: {userPokerVote} pts)
+            </h3>
             <div className="flex flex-wrap gap-2">
               {[1, 2, 3, 5, 8, 13, 21].map((val) => (
-                <div
+                <button
                   key={val}
+                  type="button"
+                  onClick={() => setUserPokerVote(val)}
                   className={`w-14 h-20 rounded-xl border-2 flex items-center justify-center font-black text-lg transition-transform hover:scale-105 shadow-xs cursor-pointer ${
-                    val === 8
+                    userPokerVote === val
                       ? 'border-brand-royal bg-blue-50 text-brand-royal scale-105 shadow-md'
                       : 'border-slate-200 bg-white text-slate-700'
                   }`}
                 >
                   {val}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -513,7 +536,7 @@ export const SEPMWorkspacePage = () => {
                     <p className="text-slate-500 text-[11px] mt-0.5">{v.rationale}</p>
                   </div>
                   <span className="w-8 h-8 rounded-lg bg-white border border-slate-300 font-black text-sm flex items-center justify-center text-brand-royal shadow-xs">
-                    {v.vote}
+                    {idx === 0 ? userPokerVote : v.vote}
                   </span>
                 </div>
               ))}
@@ -562,10 +585,10 @@ export const SEPMWorkspacePage = () => {
           <div className="p-5 border-b border-slate-200/80 flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-slate-800">28-Day Handbook Syllabus Compliance Tracker</h3>
-              <p className="text-xs text-slate-500">Verification of all 32 syllabus outcomes from Phase 1 through Phase 5</p>
+              <p className="text-xs text-slate-500">Verification of all 32 syllabus outcomes from Phase 1 through Phase 5. Click status pill to toggle review state.</p>
             </div>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              100% Implemented
+              32 / 32 Tracked
             </span>
           </div>
 
@@ -577,7 +600,7 @@ export const SEPMWorkspacePage = () => {
                   <th className="py-3 px-4">Phase</th>
                   <th className="py-3 px-4">Topic & Activity</th>
                   <th className="py-3 px-4">Implementation Evidence</th>
-                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Status (Click to Toggle)</th>
                   <th className="py-3 px-4">Reviewer Comments</th>
                 </tr>
               </thead>
@@ -589,9 +612,17 @@ export const SEPMWorkspacePage = () => {
                     <td className="py-3 px-4 font-bold text-slate-800 max-w-xs">{item.topic}</td>
                     <td className="py-3 px-4 font-mono text-purple-700 text-[11px]">{item.evidence}</td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <button
+                        onClick={() => handleToggleSyllabus(item)}
+                        className={`px-2.5 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer ${
+                          item.status === 'Completed'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                            : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                        }`}
+                        title="Click to toggle status"
+                      >
                         {item.status}
-                      </span>
+                      </button>
                     </td>
                     <td className="py-3 px-4 text-slate-500 text-[11px]">{item.comments}</td>
                   </tr>
@@ -604,3 +635,5 @@ export const SEPMWorkspacePage = () => {
     </div>
   );
 };
+
+export default SEPMWorkspacePage;

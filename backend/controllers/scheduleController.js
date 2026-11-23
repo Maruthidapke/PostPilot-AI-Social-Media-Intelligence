@@ -10,22 +10,24 @@ const PLATFORM_COLORS = {
 
 export const getScheduledEvents = async (req, res) => {
   try {
+    const userId = req.user.id || req.user._id;
     let posts;
     if (isMongo()) {
       const Post = mongoose.model('Post');
       posts = await Post.find({
+        userId,
         status: { $in: ['scheduled', 'published', 'publishing', 'failed'] }
       });
     } else {
       const allPosts = getCollection('posts');
-      posts = allPosts.filter(p => ['scheduled', 'published', 'publishing', 'failed'].includes(p.status));
+      posts = allPosts.filter(p => p.userId === userId && ['scheduled', 'published', 'publishing', 'failed'].includes(p.status));
     }
 
     const events = posts.map(p => {
       const date = p.scheduledAt || p.publishedAt || p.createdAt;
       return {
         id: p._id || p.id,
-        title: p.title || p.content.slice(0, 35) + '...',
+        title: p.title || (p.content ? p.content.slice(0, 35) + '...' : 'Untitled Post'),
         start: date,
         platform: p.platform,
         status: p.status,
@@ -94,26 +96,29 @@ export const reschedulePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { scheduledAt } = req.body;
+    const userId = req.user.id || req.user._id;
+
     if (!scheduledAt) {
       return res.status(400).json({ success: false, message: 'scheduledAt date is required.' });
     }
 
     if (isMongo()) {
       const Post = mongoose.model('Post');
-      const post = await Post.findByIdAndUpdate(
-        id,
-        { scheduledAt: new Date(scheduledAt), status: 'scheduled' },
+      const post = await Post.findOneAndUpdate(
+        { _id: id, userId },
+        { scheduledAt: new Date(scheduledAt).toISOString(), status: 'scheduled' },
         { new: true }
       );
-      return res.json({ success: true, message: 'Post rescheduled successfully', post });
+      if (!post) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
+      return res.json({ success: true, message: 'Post rescheduled successfully.', post });
     } else {
       const posts = getCollection('posts');
-      const post = posts.find(p => p._id === id || p.id === id);
-      if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
+      const post = posts.find(p => (p._id === id || p.id === id) && p.userId === userId);
+      if (!post) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
       post.scheduledAt = new Date(scheduledAt).toISOString();
       post.status = 'scheduled';
       saveStore();
-      return res.json({ success: true, message: 'Post rescheduled successfully', post });
+      return res.json({ success: true, message: 'Post rescheduled successfully.', post });
     }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -123,17 +128,25 @@ export const reschedulePost = async (req, res) => {
 export const cancelSchedule = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id || req.user._id;
+
     if (isMongo()) {
       const Post = mongoose.model('Post');
-      const post = await Post.findByIdAndUpdate(id, { status: 'cancelled' }, { new: true });
-      return res.json({ success: true, message: 'Post schedule cancelled', post });
+      const post = await Post.findOneAndUpdate(
+        { _id: id, userId },
+        { status: 'draft', scheduledAt: null },
+        { new: true }
+      );
+      if (!post) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
+      return res.json({ success: true, message: 'Scheduled post reverted to draft.' });
     } else {
       const posts = getCollection('posts');
-      const post = posts.find(p => p._id === id || p.id === id);
-      if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
-      post.status = 'cancelled';
+      const post = posts.find(p => (p._id === id || p.id === id) && p.userId === userId);
+      if (!post) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
+      post.status = 'draft';
+      post.scheduledAt = null;
       saveStore();
-      return res.json({ success: true, message: 'Post schedule cancelled', post });
+      return res.json({ success: true, message: 'Scheduled post reverted to draft.' });
     }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

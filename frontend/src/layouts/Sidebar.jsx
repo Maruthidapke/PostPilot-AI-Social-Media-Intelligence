@@ -49,6 +49,11 @@ export const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const handleLoadDemo = async () => {
     setDemoLoading(true);
     try {
@@ -188,7 +193,7 @@ export const Sidebar = () => {
               </div>
             </div>
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-navy-700 rounded-lg transition-colors"
               title="Logout"
             >
@@ -206,7 +211,7 @@ export const Sidebar = () => {
             <RefreshCw className="w-4 h-4" />
           </button>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="p-2 text-slate-400 hover:text-red-400 transition-colors"
             title="Logout"
           >

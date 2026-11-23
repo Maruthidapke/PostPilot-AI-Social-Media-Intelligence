@@ -4,15 +4,9 @@ import { api } from '../services/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({
-    id: 'usr_demo_p59_001',
-    name: 'Maruthi Dapke',
-    email: 'demo@postpilot.ai',
-    role: 'manager',
-    timezone: 'Asia/Kolkata'
-  });
-  const [token, setToken] = useState(localStorage.getItem('postpilot_token') || 'demo_token');
-  const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('postpilot_token') || null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const existingToken = localStorage.getItem('postpilot_token');
@@ -21,11 +15,18 @@ export const AuthProvider = ({ children }) => {
         .then(res => {
           if (res.success && res.user) {
             setUser(res.user);
+          } else {
+            logoutUser();
           }
         })
         .catch(() => {
-          // Keep default demo user
+          logoutUser();
+        })
+        .finally(() => {
+          setLoading(false);
         });
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -45,6 +46,11 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loginAsDemo = async () => {
+    // 1-click login for evaluation and review
+    return loginUser('demo@postpilot.ai', 'password123');
   };
 
   const registerUser = async (data) => {
@@ -71,8 +77,30 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('postpilot_token');
   };
 
+  const updateUserProfile = async (updates) => {
+    try {
+      const res = await api.updateProfile(updates);
+      if (res.success) {
+        setUser(prev => ({ ...prev, ...res.user }));
+        return { success: true };
+      }
+      return { success: false, message: res.message };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || err.message };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login: loginUser, register: registerUser, logout: logoutUser }}>
+    <AuthContext.Provider value={{
+      user,
+      token,
+      loading,
+      login: loginUser,
+      loginAsDemo,
+      register: registerUser,
+      logout: logoutUser,
+      updateProfile: updateUserProfile
+    }}>
       {children}
     </AuthContext.Provider>
   );

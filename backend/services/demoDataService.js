@@ -427,3 +427,194 @@ export async function seedDemoData(forceReset = false) {
   console.log(`\x1b[32m✔ PostPilot Seed Database Ready: ${posts.length} posts, ${comments.length} comments, 4 connected accounts.\x1b[0m`);
   return { success: true, message: 'Demo data seeded successfully' };
 }
+
+/**
+ * Seed realistic accounts, posts, and comments isolated for a specific user ID.
+ */
+export async function seedDataForUser(targetUserId) {
+  const store = getStore();
+  if (!store.socialAccounts) store.socialAccounts = [];
+  if (!store.posts) store.posts = [];
+  if (!store.comments) store.comments = [];
+
+  // Remove existing records for this user first
+  store.socialAccounts = store.socialAccounts.filter(a => a.userId !== targetUserId);
+  store.posts = store.posts.filter(p => p.userId !== targetUserId);
+  store.comments = store.comments.filter(c => c.userId !== targetUserId);
+
+  const prefix = `u_${targetUserId.slice(-5)}`;
+
+  const userAccounts = [
+    {
+      _id: `acc_ig_${prefix}`,
+      id: `acc_ig_${prefix}`,
+      userId: targetUserId,
+      platform: 'instagram',
+      platformAccountId: `178414${Date.now().toString().slice(-8)}`,
+      username: 'urbanblend_coffee',
+      displayName: 'Urban Blend Coffee Roasters',
+      profileImage: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop',
+      accountType: 'business',
+      connectionStatus: 'connected',
+      permissions: ['instagram_basic', 'instagram_manage_insights', 'instagram_manage_comments', 'instagram_content_publish'],
+      isDemo: true,
+      followersCount: 18450,
+      followingCount: 342,
+      postsCount: 28,
+      lastSyncedAt: new Date().toISOString(),
+      createdAt: new Date(Date.now() - 30 * 86400000).toISOString()
+    },
+    {
+      _id: `acc_fb_${prefix}`,
+      id: `acc_fb_${prefix}`,
+      userId: targetUserId,
+      platform: 'facebook',
+      platformAccountId: `108429${Date.now().toString().slice(-8)}`,
+      username: 'UrbanBlendRoasters',
+      displayName: 'Urban Blend Roasters',
+      profileImage: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=200&h=200&fit=crop',
+      accountType: 'page',
+      connectionStatus: 'connected',
+      permissions: ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts'],
+      isDemo: true,
+      followersCount: 24200,
+      followingCount: 120,
+      postsCount: 34,
+      lastSyncedAt: new Date().toISOString(),
+      createdAt: new Date(Date.now() - 30 * 86400000).toISOString()
+    },
+    {
+      _id: `acc_li_${prefix}`,
+      id: `acc_li_${prefix}`,
+      userId: targetUserId,
+      platform: 'linkedin',
+      platformAccountId: `urn:li:organization:${Date.now().toString().slice(-8)}`,
+      username: 'urban-blend-coffee',
+      displayName: 'Urban Blend Coffee Co.',
+      profileImage: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&h=200&fit=crop',
+      accountType: 'organization',
+      connectionStatus: 'connected',
+      permissions: ['r_organization_social', 'w_organization_social'],
+      isDemo: true,
+      followersCount: 6120,
+      followingCount: 140,
+      postsCount: 19,
+      lastSyncedAt: new Date().toISOString(),
+      createdAt: new Date(Date.now() - 30 * 86400000).toISOString()
+    },
+    {
+      _id: `acc_tw_${prefix}`,
+      id: `acc_tw_${prefix}`,
+      userId: targetUserId,
+      platform: 'twitter',
+      platformAccountId: `224820${Date.now().toString().slice(-6)}`,
+      username: 'urbanblend',
+      displayName: 'Urban Blend Coffee',
+      profileImage: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop',
+      accountType: 'creator',
+      connectionStatus: 'connected',
+      permissions: ['tweet.read', 'tweet.write', 'users.read'],
+      isDemo: true,
+      followersCount: 9840,
+      followingCount: 520,
+      postsCount: 42,
+      lastSyncedAt: new Date().toISOString(),
+      createdAt: new Date(Date.now() - 30 * 86400000).toISOString()
+    }
+  ];
+
+  const rawPosts = [
+    { title: 'Artisan Cold Brew Launch', platform: 'instagram', accId: `acc_ig_${prefix}`, daysAgo: 1, likes: 342, comments: 24, shares: 18, reach: 3420, content: 'Brewed for 18 hours in cold filtered spring water. Smooth, chocolatey, and naturally sweet. Stop by our flagship cafe or grab a 4-pack online! ☕🌿 #coldbrew #specialtycoffee #artisan #roastery', status: 'published' },
+    { title: 'Single-Origin Ethiopian Yirgacheffe Drop', platform: 'instagram', accId: `acc_ig_${prefix}`, daysAgo: 3, likes: 418, comments: 31, shares: 26, reach: 4100, content: 'Notes of jasmine blossoms, bergamot, and sweet peach. Direct trade from smallholder farms in southern Ethiopia. Roast profile: Light. Grab whole bean bags this weekend.', status: 'published' },
+    { title: 'Latte Art Competition Highlights', platform: 'facebook', accId: `acc_fb_${prefix}`, daysAgo: 5, likes: 289, comments: 19, shares: 34, reach: 2980, content: 'Massive thank you to everyone who joined our Friday evening barista throwdown! Huge shoutout to @barista_maya for taking home 1st place with that flawless tulip pour. 🏆✨', status: 'published' },
+    { title: 'Sustainability Milestone: 100% Compostable Packaging', platform: 'linkedin', accId: `acc_li_${prefix}`, daysAgo: 7, likes: 194, comments: 16, shares: 42, reach: 2450, content: 'We are proud to share that starting this quarter, all Urban Blend retail bags and takeaway cups are certified 100% commercially compostable. Here is our journey toward net-zero supply chain emissions.', status: 'published' },
+    { title: 'Morning Espresso Poll', platform: 'twitter', accId: `acc_tw_${prefix}`, daysAgo: 2, likes: 164, comments: 48, shares: 22, reach: 2100, content: 'Quick morning check: Are you team Flat White or team Long Black? Settle the debate below 👇☕', status: 'published' },
+    { title: 'Weekend Brunch Pairing Preview', platform: 'instagram', accId: `acc_ig_${prefix}`, daysAgo: 10, likes: 388, comments: 22, shares: 15, reach: 3670, content: 'New menu item dropping this Saturday: Lemon ricotta pancakes paired with our house citrus cold brew. Reserve your table via link in bio! 🥞🍋', status: 'published' },
+    { title: 'Upcoming Espresso Roasting Masterclass', platform: 'facebook', accId: `acc_fb_${prefix}`, daysAgo: -2, likes: 0, comments: 0, shares: 0, reach: 0, content: 'Excited to announce our hands-on Roasting 101 Masterclass next Saturday at 11 AM! Limited to 12 participants. Early bird registration is now open.', status: 'scheduled' },
+    { title: 'Seasonal Winter Spice Latte Reveal', platform: 'instagram', accId: `acc_ig_${prefix}`, daysAgo: -4, likes: 0, comments: 0, shares: 0, reach: 0, content: 'Nutmeg, organic cinnamon bark, and house-made vanilla bean syrup over steamed whole milk. Dropping Monday morning! ❄️☕', status: 'scheduled' }
+  ];
+
+  const userPosts = rawPosts.map((p, idx) => {
+    const pubDate = new Date(Date.now() - p.daysAgo * 86400 * 1000);
+    return {
+      _id: `post_${prefix}_${idx + 1}`,
+      id: `post_${prefix}_${idx + 1}`,
+      userId: targetUserId,
+      socialAccountId: p.accId,
+      platform: p.platform,
+      externalPostId: `ext_${p.platform}_${idx + 100}`,
+      title: p.title,
+      content: p.content,
+      media: [{ url: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800', type: 'image' }],
+      hashtags: ['#specialtycoffee', '#urbanblend', '#marketing'],
+      scheduledAt: p.daysAgo < 0 ? pubDate.toISOString() : undefined,
+      publishedAt: p.daysAgo >= 0 ? pubDate.toISOString() : undefined,
+      status: p.status,
+      isSimulated: true,
+      dataSource: 'demo_simulation',
+      metricsSnapshot: {
+        likes: p.likes,
+        comments: p.comments,
+        shares: p.shares,
+        reach: p.reach,
+        impressions: Math.round(p.reach * 1.3),
+        engagementRate: p.reach > 0 ? Number((((p.likes + p.comments + p.shares) / p.reach) * 100).toFixed(2)) : 0
+      },
+      createdAt: pubDate.toISOString()
+    };
+  });
+
+  const sampleComments = [
+    { text: "Your dark roast blend is easily the best coffee in town! Absolutely love it ❤️☕", pIdx: 0, u: 'sarah_m' },
+    { text: "Super fast shipping, package arrived in mint condition. 10/10 service!", pIdx: 0, u: 'alex_dev' },
+    { text: "The new eco-friendly packaging is a huge step forward. Great initiative! 🌿", pIdx: 3, u: 'eco_warrior' },
+    { text: "Visited your downtown branch yesterday and the staff was unbelievably friendly.", pIdx: 2, u: 'clara_k' },
+    { text: "Obsessed with this oat milk latte recipe! Made it this morning.", pIdx: 0, u: 'rohit_99' },
+    { text: "What are your opening hours on national holidays?", pIdx: 2, u: 'maya_b' },
+    { text: "Do you offer sugar-free syrup alternatives for the iced mocha?", pIdx: 5, u: 'priya_k' },
+    { text: "Waited 35 minutes for a simple black coffee. Totally unacceptable service today.", pIdx: 2, u: 'angry_commuter' },
+    { text: "The espresso was lukewarm and tasted horribly burnt. Very disappointed.", pIdx: 1, u: 'taste_police' },
+    { text: "Terrible delivery experience. Bag was torn open and coffee spilled everywhere.", pIdx: 0, u: 'sad_shopper' }
+  ];
+
+  const userComments = sampleComments.map((c, i) => {
+    const sentimentRes = analyzeSentiment(c.text);
+    return {
+      _id: `comm_${prefix}_${i + 1}`,
+      id: `comm_${prefix}_${i + 1}`,
+      userId: targetUserId,
+      socialAccountId: `acc_ig_${prefix}`,
+      postId: userPosts[c.pIdx]._id,
+      externalCommentId: `ext_comm_${i + 100}`,
+      commenterUsername: c.u,
+      commentText: c.text,
+      sentiment: sentimentRes.sentiment,
+      confidence: sentimentRes.confidence,
+      scores: sentimentRes.scores,
+      detectedThemes: sentimentRes.detectedThemes,
+      source: 'demo_simulation',
+      createdAt: new Date(Date.now() - (i % 7) * 86400 * 1000).toISOString()
+    };
+  });
+
+  store.socialAccounts.push(...userAccounts);
+  store.posts.push(...userPosts);
+  store.comments.push(...userComments);
+  saveStore();
+
+  return {
+    success: true,
+    accountsCount: userAccounts.length,
+    postsCount: userPosts.length,
+    commentsCount: userComments.length
+  };
+}
+
+export function clearDataForUser(targetUserId) {
+  const store = getStore();
+  if (store.socialAccounts) store.socialAccounts = store.socialAccounts.filter(a => a.userId !== targetUserId);
+  if (store.posts) store.posts = store.posts.filter(p => p.userId !== targetUserId);
+  if (store.comments) store.comments = store.comments.filter(c => c.userId !== targetUserId);
+  saveStore();
+  return { success: true };
+}

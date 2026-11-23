@@ -1,14 +1,15 @@
-import { getCollection, saveStore, isMongo } from '../config/db.js';
+import { getCollection, setCollection, saveStore, isMongo } from '../config/db.js';
 import mongoose from 'mongoose';
 
 export const getPosts = async (req, res) => {
   try {
     const { platform, status, search, accountId } = req.query;
+    const userId = req.user.id || req.user._id;
     let posts;
 
     if (isMongo()) {
       const Post = mongoose.model('Post');
-      const query = {};
+      const query = { userId };
       if (platform && platform !== 'all') query.platform = platform;
       if (status && status !== 'all') query.status = status;
       if (accountId && accountId !== 'all') query.socialAccountId = accountId;
@@ -18,6 +19,7 @@ export const getPosts = async (req, res) => {
     } else {
       let allPosts = getCollection('posts');
       posts = allPosts.filter(p => {
+        if (p.userId !== userId) return false;
         if (platform && platform !== 'all' && p.platform !== platform) return false;
         if (status && status !== 'all' && p.status !== status) return false;
         if (accountId && accountId !== 'all' && p.socialAccountId !== accountId) return false;
@@ -37,20 +39,21 @@ export const getPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id || req.user._id;
     let post;
     let comments = [];
 
     if (isMongo()) {
       const Post = mongoose.model('Post');
       const Comment = mongoose.model('Comment');
-      post = await Post.findById(id);
+      post = await Post.findOne({ _id: id, userId });
       if (post) {
         comments = await Comment.find({ postId: post._id });
       }
     } else {
       const allPosts = getCollection('posts');
       const allComments = getCollection('comments');
-      post = allPosts.find(p => p._id === id || p.id === id);
+      post = allPosts.find(p => (p._id === id || p.id === id) && p.userId === userId);
       if (post) {
         comments = allComments.filter(c => c.postId === post._id || c.postId === post.id);
       }
@@ -131,17 +134,18 @@ export const createPost = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id || req.user._id;
     const updates = req.body;
 
     if (isMongo()) {
       const Post = mongoose.model('Post');
-      const post = await Post.findByIdAndUpdate(id, updates, { new: true });
-      if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
+      const post = await Post.findOneAndUpdate({ _id: id, userId }, updates, { new: true });
+      if (!post) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
       return res.json({ success: true, post });
     } else {
       const posts = getCollection('posts');
-      const index = posts.findIndex(p => p._id === id || p.id === id);
-      if (index === -1) return res.status(404).json({ success: false, message: 'Post not found' });
+      const index = posts.findIndex(p => (p._id === id || p.id === id) && p.userId === userId);
+      if (index === -1) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
       posts[index] = { ...posts[index], ...updates };
       saveStore();
       return res.json({ success: true, post: posts[index] });
@@ -154,12 +158,17 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id || req.user._id;
+
     if (isMongo()) {
       const Post = mongoose.model('Post');
-      await Post.findByIdAndDelete(id);
+      const deleted = await Post.findOneAndDelete({ _id: id, userId });
+      if (!deleted) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
     } else {
       let posts = getCollection('posts');
-      posts = posts.filter(p => p._id !== id && p.id !== id);
+      const existing = posts.find(p => (p._id === id || p.id === id) && p.userId === userId);
+      if (!existing) return res.status(404).json({ success: false, message: 'Post not found or unauthorized' });
+      posts = posts.filter(p => !(p._id === id || p.id === id));
       setCollection('posts', posts);
     }
     res.json({ success: true, message: 'Post deleted successfully' });

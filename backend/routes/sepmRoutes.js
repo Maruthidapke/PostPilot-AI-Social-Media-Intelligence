@@ -6,6 +6,7 @@ import {
   getSprints,
   getKanbanTasks,
   updateKanbanTask,
+  createKanbanTask,
   getPlanningPoker,
   getLeanWaste,
   getSyllabus,
@@ -20,6 +21,7 @@ router.get('/requirements', authenticate, getRequirements);
 router.get('/tools', authenticate, getAIToolsComparison);
 router.get('/sprints', authenticate, getSprints);
 router.get('/kanban', authenticate, getKanbanTasks);
+router.post('/kanban', authenticate, createKanbanTask);
 router.put('/kanban/:id', authenticate, updateKanbanTask);
 router.get('/planning-poker', authenticate, getPlanningPoker);
 router.get('/lean-waste', authenticate, getLeanWaste);
