@@ -19,6 +19,16 @@
       "role": "manager",
       "timezone": "Asia/Kolkata",
       "createdAt": "2026-11-23T18:20:31.842Z"
+    },
+    {
+      "_id": "usr_1795458382639_edc0p",
+      "id": "usr_1795458382639_edc0p",
+      "name": "King ",
+      "email": "king07@gmail.com",
+      "passwordHash": "$2a$10$dt/FhWYvYR8Nt6UxF/lCeOwpyt4iyOD8g1TlJm3M93jnv6/dC6gXu",
+      "role": "manager",
+      "timezone": "Asia/Calcutta",
+      "createdAt": "2026-11-23T18:26:22.639Z"
     }
   ],
   "socialAccounts": [
@@ -137,6 +147,194 @@
       "postsCount": 15,
       "lastSyncedAt": "2026-11-23T18:20:31.857Z",
       "createdAt": "2026-11-23T18:20:31.857Z"
+    },
+    {
+      "_id": "acc_ig_u_edc0p",
+      "id": "acc_ig_u_edc0p",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "instagram",
+      "platformAccountId": "17841458402607",
+      "username": "urbanblend_coffee",
+      "displayName": "Urban Blend Coffee Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop",
+      "accountType": "business",
+      "connectionStatus": "connected",
+      "permissions": [
+        "instagram_basic",
+        "instagram_manage_insights",
+        "instagram_manage_comments",
+        "instagram_content_publish"
+      ],
+      "isDemo": true,
+      "followersCount": 18450,
+      "followingCount": 342,
+      "postsCount": 28,
+      "lastSyncedAt": "2026-11-23T18:26:42.607Z",
+      "createdAt": "2026-10-24T18:26:42.607Z"
+    },
+    {
+      "_id": "acc_fb_u_edc0p",
+      "id": "acc_fb_u_edc0p",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "facebook",
+      "platformAccountId": "10842958402607",
+      "username": "UrbanBlendRoasters",
+      "displayName": "Urban Blend Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=200&h=200&fit=crop",
+      "accountType": "page",
+      "connectionStatus": "connected",
+      "permissions": [
+        "pages_show_list",
+        "pages_read_engagement",
+        "pages_manage_posts"
+      ],
+      "isDemo": true,
+      "followersCount": 24200,
+      "followingCount": 120,
+      "postsCount": 34,
+      "lastSyncedAt": "2026-11-23T18:26:42.607Z",
+      "createdAt": "2026-10-24T18:26:42.607Z"
+    },
+    {
+      "_id": "acc_li_u_edc0p",
+      "id": "acc_li_u_edc0p",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "linkedin",
+      "platformAccountId": "urn:li:organization:58402607",
+      "username": "urban-blend-coffee",
+      "displayName": "Urban Blend Coffee Co.",
+      "profileImage": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&h=200&fit=crop",
+      "accountType": "organization",
+      "connectionStatus": "connected",
+      "permissions": [
+        "r_organization_social",
+        "w_organization_social"
+      ],
+      "isDemo": true,
+      "followersCount": 6120,
+      "followingCount": 140,
+      "postsCount": 19,
+      "lastSyncedAt": "2026-11-23T18:26:57.819Z",
+      "createdAt": "2026-10-24T18:26:42.607Z"
+    },
+    {
+      "_id": "acc_tw_u_edc0p",
+      "id": "acc_tw_u_edc0p",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "twitter",
+      "platformAccountId": "224820402607",
+      "username": "urbanblend",
+      "displayName": "Urban Blend Coffee",
+      "profileImage": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop",
+      "accountType": "creator",
+      "connectionStatus": "connected",
+      "permissions": [
+        "tweet.read",
+        "tweet.write",
+        "users.read"
+      ],
+      "isDemo": true,
+      "followersCount": 9840,
+      "followingCount": 520,
+      "postsCount": 42,
+      "lastSyncedAt": "2026-11-23T18:26:42.607Z",
+      "createdAt": "2026-10-24T18:26:42.607Z"
+    },
+    {
+      "_id": "acc_instagram_1795458422296",
+      "id": "acc_instagram_1795458422296",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "instagram",
+      "platformAccountId": "17841405309211029",
+      "username": "urbanblend_coffee",
+      "displayName": "Urban Blend Coffee Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop",
+      "accountType": "business",
+      "connectionStatus": "connected",
+      "permissions": [
+        "read_profile",
+        "read_insights",
+        "manage_comments",
+        "publish_content"
+      ],
+      "isDemo": true,
+      "followersCount": 18450,
+      "followingCount": 342,
+      "postsCount": 15,
+      "lastSyncedAt": "2026-11-23T18:27:02.296Z",
+      "createdAt": "2026-11-23T18:27:02.296Z"
+    },
+    {
+      "_id": "acc_instagram_1795458425653",
+      "id": "acc_instagram_1795458425653",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "instagram",
+      "platformAccountId": "17841405309211029",
+      "username": "urbanblend_coffee",
+      "displayName": "Urban Blend Coffee Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop",
+      "accountType": "business",
+      "connectionStatus": "connected",
+      "permissions": [
+        "read_profile",
+        "read_insights",
+        "manage_comments",
+        "publish_content"
+      ],
+      "isDemo": true,
+      "followersCount": 18450,
+      "followingCount": 342,
+      "postsCount": 15,
+      "lastSyncedAt": "2026-11-23T18:27:05.653Z",
+      "createdAt": "2026-11-23T18:27:05.653Z"
+    },
+    {
+      "_id": "acc_instagram_1795458426886",
+      "id": "acc_instagram_1795458426886",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "instagram",
+      "platformAccountId": "17841405309211029",
+      "username": "urbanblend_coffee",
+      "displayName": "Urban Blend Coffee Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop",
+      "accountType": "business",
+      "connectionStatus": "connected",
+      "permissions": [
+        "read_profile",
+        "read_insights",
+        "manage_comments",
+        "publish_content"
+      ],
+      "isDemo": true,
+      "followersCount": 18450,
+      "followingCount": 342,
+      "postsCount": 15,
+      "lastSyncedAt": "2026-11-23T18:27:06.886Z",
+      "createdAt": "2026-11-23T18:27:06.886Z"
+    },
+    {
+      "_id": "acc_instagram_1795458429863",
+      "id": "acc_instagram_1795458429863",
+      "userId": "usr_1795458382639_edc0p",
+      "platform": "instagram",
+      "platformAccountId": "17841405309211029",
+      "username": "urbanblend_coffee",
+      "displayName": "Urban Blend Coffee Roasters",
+      "profileImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop",
+      "accountType": "business",
+      "connectionStatus": "connected",
+      "permissions": [
+        "read_profile",
+        "read_insights",
+        "manage_comments",
+        "publish_content"
+      ],
+      "isDemo": true,
+      "followersCount": 18450,
+      "followingCount": 342,
+      "postsCount": 15,
+      "lastSyncedAt": "2026-11-23T18:27:09.863Z",
+      "createdAt": "2026-11-23T18:27:09.863Z"
     }
   ],
   "oauthCredentials": [
@@ -189,9 +387,67 @@
       "socialAccountId": "acc_instagram_1795458031857",
       "encryptedAccessToken": "c69528ba656399ddfe920767a207dd40:5bcee7619e17b34769de8fe3aa93afa2:0ed1fb19ea98488b305d48f2b266d0aebcd1185b98b575082252a0",
       "expiresAt": "2027-01-22T18:20:31.857Z"
+    },
+    {
+      "_id": "cred_acc_instagram_1795458422296",
+      "socialAccountId": "acc_instagram_1795458422296",
+      "encryptedAccessToken": "caf98eb69bc1438c4be86249d037f7e8:a9ef7db63bb87a5c6a78a9da838286c7:490a25cee96d5e69a3467464845c4dbe501b91a4711e822c7189a1",
+      "expiresAt": "2027-01-22T18:27:02.297Z"
+    },
+    {
+      "_id": "cred_acc_instagram_1795458425653",
+      "socialAccountId": "acc_instagram_1795458425653",
+      "encryptedAccessToken": "83600a06569729db4d99106df3795db3:ae7d38f4f79c1e78207f7ba52306e60e:66baca0df26ebd364291dbce8f304cdea32fb8283e93c7a54c0604",
+      "expiresAt": "2027-01-22T18:27:05.653Z"
+    },
+    {
+      "_id": "cred_acc_instagram_1795458426886",
+      "socialAccountId": "acc_instagram_1795458426886",
+      "encryptedAccessToken": "4235e33a1eb4b7dbb486b185ddb5e5cc:63a162edd8cfb08b7bf2774330110801:ddca950a2d8d64f7761dfba6e85b9844d42ba77535a55b054b4401",
+      "expiresAt": "2027-01-22T18:27:06.887Z"
+    },
+    {
+      "_id": "cred_acc_instagram_1795458429863",
+      "socialAccountId": "acc_instagram_1795458429863",
+      "encryptedAccessToken": "be80eee7429a6ee8292568ed2a438f9b:51dd7100947800446f6cb1b9e2e0dd29:07717b17c79ab1f571ae82a9284997a8e737e70697932d85a53ea8",
+      "expiresAt": "2027-01-22T18:27:09.863Z"
     }
   ],
   "posts": [
+    {
+      "_id": "post_1795458480559",
+      "id": "post_1795458480559",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "platform": "instagram",
+      "title": "shbdugvc",
+      "content": "hdbhadsbk",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#coldbrew",
+        "#roastery"
+      ],
+      "publishedAt": "2026-11-23T18:28:00.559Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "saves": 0,
+        "reach": 0,
+        "impressions": 0,
+        "engagementRate": 0
+      },
+      "createdAt": "2026-11-23T18:28:00.560Z"
+    },
     {
       "_id": "post_e2e_scheduled",
       "id": "post_e2e_scheduled",
@@ -515,6 +771,278 @@
         "engagementRate": 0
       },
       "createdAt": "2026-11-27T15:27:12.989Z"
+    },
+    {
+      "_id": "post_u_edc0p_1",
+      "id": "post_u_edc0p_1",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "platform": "instagram",
+      "externalPostId": "ext_instagram_100",
+      "title": "Artisan Cold Brew Launch",
+      "content": "Brewed for 18 hours in cold filtered spring water. Smooth, chocolatey, and naturally sweet. Stop by our flagship cafe or grab a 4-pack online! ☕🌿 #coldbrew #specialtycoffee #artisan #roastery",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "publishedAt": "2026-11-22T18:26:42.607Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 342,
+        "comments": 24,
+        "shares": 18,
+        "reach": 3420,
+        "impressions": 4446,
+        "engagementRate": 11.23
+      },
+      "createdAt": "2026-11-22T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_2",
+      "id": "post_u_edc0p_2",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "platform": "instagram",
+      "externalPostId": "ext_instagram_101",
+      "title": "Single-Origin Ethiopian Yirgacheffe Drop",
+      "content": "Notes of jasmine blossoms, bergamot, and sweet peach. Direct trade from smallholder farms in southern Ethiopia. Roast profile: Light. Grab whole bean bags this weekend.",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "publishedAt": "2026-11-20T18:26:42.607Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 418,
+        "comments": 31,
+        "shares": 26,
+        "reach": 4100,
+        "impressions": 5330,
+        "engagementRate": 11.59
+      },
+      "createdAt": "2026-11-20T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_3",
+      "id": "post_u_edc0p_3",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_fb_u_edc0p",
+      "platform": "facebook",
+      "externalPostId": "ext_facebook_102",
+      "title": "Latte Art Competition Highlights",
+      "content": "Massive thank you to everyone who joined our Friday evening barista throwdown! Huge shoutout to @barista_maya for taking home 1st place with that flawless tulip pour. 🏆✨",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "publishedAt": "2026-11-18T18:26:42.607Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 289,
+        "comments": 19,
+        "shares": 34,
+        "reach": 2980,
+        "impressions": 3874,
+        "engagementRate": 11.48
+      },
+      "createdAt": "2026-11-18T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_4",
+      "id": "post_u_edc0p_4",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_li_u_edc0p",
+      "platform": "linkedin",
+      "externalPostId": "ext_linkedin_103",
+      "title": "Sustainability Milestone: 100% Compostable Packaging",
+      "content": "We are proud to share that starting this quarter, all Urban Blend retail bags and takeaway cups are certified 100% commercially compostable. Here is our journey toward net-zero supply chain emissions.",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "publishedAt": "2026-11-16T18:26:42.607Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 194,
+        "comments": 16,
+        "shares": 42,
+        "reach": 2450,
+        "impressions": 3185,
+        "engagementRate": 10.29
+      },
+      "createdAt": "2026-11-16T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_5",
+      "id": "post_u_edc0p_5",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_tw_u_edc0p",
+      "platform": "twitter",
+      "externalPostId": "ext_twitter_104",
+      "title": "Morning Espresso Poll",
+      "content": "Quick morning check: Are you team Flat White or team Long Black? Settle the debate below 👇☕",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "publishedAt": "2026-11-21T18:26:42.607Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 164,
+        "comments": 48,
+        "shares": 22,
+        "reach": 2100,
+        "impressions": 2730,
+        "engagementRate": 11.14
+      },
+      "createdAt": "2026-11-21T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_6",
+      "id": "post_u_edc0p_6",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "platform": "instagram",
+      "externalPostId": "ext_instagram_105",
+      "title": "Weekend Brunch Pairing Preview",
+      "content": "New menu item dropping this Saturday: Lemon ricotta pancakes paired with our house citrus cold brew. Reserve your table via link in bio! 🥞🍋",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "publishedAt": "2026-11-13T18:26:42.607Z",
+      "status": "published",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 388,
+        "comments": 22,
+        "shares": 15,
+        "reach": 3670,
+        "impressions": 4771,
+        "engagementRate": 11.58
+      },
+      "createdAt": "2026-11-13T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_7",
+      "id": "post_u_edc0p_7",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_fb_u_edc0p",
+      "platform": "facebook",
+      "externalPostId": "ext_facebook_106",
+      "title": "Upcoming Espresso Roasting Masterclass",
+      "content": "Excited to announce our hands-on Roasting 101 Masterclass next Saturday at 11 AM! Limited to 12 participants. Early bird registration is now open.",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "scheduledAt": "2026-11-25T18:26:42.607Z",
+      "status": "scheduled",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "reach": 0,
+        "impressions": 0,
+        "engagementRate": 0
+      },
+      "createdAt": "2026-11-25T18:26:42.607Z"
+    },
+    {
+      "_id": "post_u_edc0p_8",
+      "id": "post_u_edc0p_8",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "platform": "instagram",
+      "externalPostId": "ext_instagram_107",
+      "title": "Seasonal Winter Spice Latte Reveal",
+      "content": "Nutmeg, organic cinnamon bark, and house-made vanilla bean syrup over steamed whole milk. Dropping Monday morning! ❄️☕",
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+          "type": "image"
+        }
+      ],
+      "hashtags": [
+        "#specialtycoffee",
+        "#urbanblend",
+        "#marketing"
+      ],
+      "scheduledAt": "2026-11-27T18:26:42.607Z",
+      "status": "scheduled",
+      "isSimulated": true,
+      "dataSource": "demo_simulation",
+      "metricsSnapshot": {
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "reach": 0,
+        "impressions": 0,
+        "engagementRate": 0
+      },
+      "createdAt": "2026-11-27T18:26:42.607Z"
     }
   ],
   "comments": [
@@ -964,6 +1492,228 @@
       ],
       "source": "demo_simulation",
       "createdAt": "2026-11-18T15:27:12.990Z"
+    },
+    {
+      "_id": "comm_u_edc0p_1",
+      "id": "comm_u_edc0p_1",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_1",
+      "externalCommentId": "ext_comm_100",
+      "commenterUsername": "sarah_m",
+      "commentText": "Your dark roast blend is easily the best coffee in town! Absolutely love it ❤️☕",
+      "sentiment": "positive",
+      "confidence": 0.9,
+      "scores": {
+        "positive": 0.9,
+        "neutral": 0.08,
+        "negative": 0.02
+      },
+      "detectedThemes": [
+        "Product Quality"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-23T18:26:42.609Z"
+    },
+    {
+      "_id": "comm_u_edc0p_2",
+      "id": "comm_u_edc0p_2",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_1",
+      "externalCommentId": "ext_comm_101",
+      "commenterUsername": "alex_dev",
+      "commentText": "Super fast shipping, package arrived in mint condition. 10/10 service!",
+      "sentiment": "positive",
+      "confidence": 0.887,
+      "scores": {
+        "positive": 0.887,
+        "neutral": 0.093,
+        "negative": 0.02
+      },
+      "detectedThemes": [
+        "Customer Service",
+        "Delivery & Logistics"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-22T18:26:42.609Z"
+    },
+    {
+      "_id": "comm_u_edc0p_3",
+      "id": "comm_u_edc0p_3",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_4",
+      "externalCommentId": "ext_comm_102",
+      "commenterUsername": "eco_warrior",
+      "commentText": "The new eco-friendly packaging is a huge step forward. Great initiative! 🌿",
+      "sentiment": "positive",
+      "confidence": 0.9,
+      "scores": {
+        "positive": 0.9,
+        "neutral": 0.08,
+        "negative": 0.02
+      },
+      "detectedThemes": [
+        "General Sentiment"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-21T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_4",
+      "id": "comm_u_edc0p_4",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_3",
+      "externalCommentId": "ext_comm_103",
+      "commenterUsername": "clara_k",
+      "commentText": "Visited your downtown branch yesterday and the staff was unbelievably friendly.",
+      "sentiment": "positive",
+      "confidence": 0.858,
+      "scores": {
+        "positive": 0.858,
+        "neutral": 0.122,
+        "negative": 0.02
+      },
+      "detectedThemes": [
+        "Customer Service"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-20T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_5",
+      "id": "comm_u_edc0p_5",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_1",
+      "externalCommentId": "ext_comm_104",
+      "commenterUsername": "rohit_99",
+      "commentText": "Obsessed with this oat milk latte recipe! Made it this morning.",
+      "sentiment": "positive",
+      "confidence": 0.83,
+      "scores": {
+        "positive": 0.83,
+        "neutral": 0.15,
+        "negative": 0.02
+      },
+      "detectedThemes": [
+        "General Sentiment"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-19T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_6",
+      "id": "comm_u_edc0p_6",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_3",
+      "externalCommentId": "ext_comm_105",
+      "commenterUsername": "maya_b",
+      "commentText": "What are your opening hours on national holidays?",
+      "sentiment": "neutral",
+      "confidence": 0.82,
+      "scores": {
+        "positive": 0.09,
+        "neutral": 0.82,
+        "negative": 0.09
+      },
+      "detectedThemes": [
+        "Customer Question"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-18T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_7",
+      "id": "comm_u_edc0p_7",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_6",
+      "externalCommentId": "ext_comm_106",
+      "commenterUsername": "priya_k",
+      "commentText": "Do you offer sugar-free syrup alternatives for the iced mocha?",
+      "sentiment": "neutral",
+      "confidence": 0.82,
+      "scores": {
+        "positive": 0.09,
+        "neutral": 0.82,
+        "negative": 0.09
+      },
+      "detectedThemes": [
+        "Customer Question"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-17T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_8",
+      "id": "comm_u_edc0p_8",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_3",
+      "externalCommentId": "ext_comm_107",
+      "commenterUsername": "angry_commuter",
+      "commentText": "Waited 35 minutes for a simple black coffee. Totally unacceptable service today.",
+      "sentiment": "negative",
+      "confidence": 0.899,
+      "scores": {
+        "positive": 0.01,
+        "neutral": 0.091,
+        "negative": 0.899
+      },
+      "detectedThemes": [
+        "Customer Service"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-23T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_9",
+      "id": "comm_u_edc0p_9",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_2",
+      "externalCommentId": "ext_comm_108",
+      "commenterUsername": "taste_police",
+      "commentText": "The espresso was lukewarm and tasted horribly burnt. Very disappointed.",
+      "sentiment": "negative",
+      "confidence": 0.925,
+      "scores": {
+        "positive": 0.01,
+        "neutral": 0.065,
+        "negative": 0.925
+      },
+      "detectedThemes": [
+        "Product Quality",
+        "Digital Experience"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-22T18:26:42.610Z"
+    },
+    {
+      "_id": "comm_u_edc0p_10",
+      "id": "comm_u_edc0p_10",
+      "userId": "usr_1795458382639_edc0p",
+      "socialAccountId": "acc_ig_u_edc0p",
+      "postId": "post_u_edc0p_1",
+      "externalCommentId": "ext_comm_109",
+      "commenterUsername": "sad_shopper",
+      "commentText": "Terrible delivery experience. Bag was torn open and coffee spilled everywhere.",
+      "sentiment": "negative",
+      "confidence": 0.933,
+      "scores": {
+        "positive": 0.01,
+        "neutral": 0.057,
+        "negative": 0.933
+      },
+      "detectedThemes": [
+        "Delivery & Logistics"
+      ],
+      "source": "demo_simulation",
+      "createdAt": "2026-11-21T18:26:42.610Z"
     }
   ],
   "postMetricSnapshots": [],
