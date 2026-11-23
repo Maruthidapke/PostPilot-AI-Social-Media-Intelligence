@@ -1,0 +1,41 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "PostPilot Connected Accounts",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "postpilot_connected_accounts", "refId": "A" }]
+    },
+    {
+      "title": "Sentiment Benchmark Accuracy (%)",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "targets": [{ "expr": "postpilot_sentiment_benchmark_accuracy_pct", "refId": "A" }],
+      "fieldConfig": { "defaults": { "min": 0, "max": 100 } }
+    },
+    {
+      "title": "Analyzed Audience Comments",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "postpilot_comments_analyzed_total", "refId": "A" }]
+    },
+    {
+      "title": "System Uptime",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "targets": [{ "expr": "postpilot_uptime_seconds", "refId": "A" }]
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["postpilot", "social-intelligence"],
+  "title": "PostPilot AI Production Operations Dashboard",
+  "version": 1
+}

@@ -1,0 +1,18 @@
+{
+  "name": "postpilot-ai",
+  "version": "1.0.0",
+  "description": "PostPilot AI - AI-Powered Social Media Management, Sentiment Analytics and Predictive Scheduling Platform (P59)",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "ai": "cd ai-service && python3 main.py",
+    "dev": "node start-dev.js",
+    "test": "cd backend && npm test",
+    "test:ai": "cd ai-service && python3 -m unittest discover tests",
+    "build": "cd frontend && npm run build"
+  },
+  "author": "Maruthi Dapke (ENG24CS0127) - Dayananda Sagar University",
+  "license": "ISC"
+}
