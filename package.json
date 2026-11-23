@@ -2,6 +2,7 @@
   "name": "postpilot-ai",
   "version": "1.0.0",
   "description": "PostPilot AI - AI-Powered Social Media Management, Sentiment Analytics and Predictive Scheduling Platform (P59)",
+  "type": "module",
   "private": true,
   "scripts": {
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
